@@ -26,12 +26,12 @@
          "apiVersion":"2023-01-01",
          "name":"[concat('aspplan-fehrfactory-', uniqueString(resourceGroup().id))]",
          "location":"[parameters('appServicePlanLocation')]",
-         "sku":{
-            "name":"[parameters('appServicePlanSkuName')]",
-            "tier":"[split(parameters('appServicePlanSkuName'), '_')[0]]",
-            "size":"[split(parameters('appServicePlanSkuName'), '_')[1]]",
-            "family":"P",
-            "capacity":1
+         "sku": {
+         "name": "[parameters('appServicePlanSkuName')]",
+         "tier": "[if(contains(parameters('appServicePlanSkuName'), '_'), split(parameters('appServicePlanSkuName'), '_')[0], parameters('appServicePlanSkuName'))]",
+         "size": "[if(contains(parameters('appServicePlanSkuName'), '_'), split(parameters('appServicePlanSkuName'), '_')[1], '')]",
+         "family": "[if(contains(parameters('appServicePlanSkuName'), '_'), 'P', 'F')]",
+         "capacity": 1
          },
          "properties":{
             "reserved":"true // Erforderlich für Linux-Pläne"
