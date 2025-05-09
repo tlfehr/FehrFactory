@@ -21,9 +21,7 @@
     /werden wir später Vari
   },
   "resources": [
-    {
-
-      
+{   
   "type": "Microsoft.Web/serverfarms",
   "apiVersion": "2023-01-01",
   "name": "[concat('aspplan-fehrfactory-', uniqueString(resourceGroup().id))]",
@@ -76,8 +74,6 @@
   },
   "dependsOn": []
 }
-
-
   ],
   "outputs": {
     // Hier können wir später Ausgaben definieren
