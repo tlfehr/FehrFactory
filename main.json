@@ -1,0 +1,85 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServicePlanLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "Die Azure-Region, in der der App Service Plan bereitgestellt werden soll."
+      },
+      "defaultValue": "northeurope"
+    },
+    "appServicePlanSkuName": {
+      "type": "string",
+      "metadata": {
+        "description": "Der Name der SKU (Preisstufe) für den App Service Plan (z.B. F1, B1, S1)."
+      },
+      "defaultValue": "F1"
+    }
+  },
+  "variables": {
+    /werden wir später Vari
+  },
+  "resources": [
+    {
+
+      
+  "type": "Microsoft.Web/serverfarms",
+  "apiVersion": "2023-01-01",
+  "name": "[concat('aspplan-fehrfactory-', uniqueString(resourceGroup().id))]",
+  "location": "[parameters('appServicePlanLocation')]",
+  "sku": {
+    "name": "[parameters('appServicePlanSkuName')]",
+    "tier": "[split(parameters('appServicePlanSkuName'), '_')[0]]",
+    "size": "[split(parameters('appServicePlanSkuName'), '_')[1]]",
+    "family": "P",
+    "capacity": 1
+  },
+  "properties": {
+    "reserved": true // Erforderlich für Linux-Pläne
+  }
+},
+{
+  "type": "Microsoft.Web/sites",
+  "apiVersion": "2023-01-01",
+  "name": "[concat('app-fehrfactory-', uniqueString(resourceGroup().id))]",
+  "location": "[parameters('appServicePlanLocation')]",
+  "properties": {
+    "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', concat('aspplan-fehrfactory-', uniqueString(resourceGroup().id)))]",
+    "siteConfig": {
+      "linuxFxVersion": "PHP|8.3"
+    }
+  },
+  "dependsOn": [
+    "[resourceId('Microsoft.Web/serverfarms', concat('aspplan-fehrfactory-', uniqueString(resourceGroup().id)))]"
+  ]
+},
+{
+  "type": "Microsoft.DBforMySQL/flexibleServers",
+  "apiVersion": "2023-06-01-preview",
+  "name": "[concat('db-fehrfactory-', uniqueString(resourceGroup().id))]",
+  "location": "[parameters('appServicePlanLocation')]",
+  "properties": {
+    "administratorLogin": "wordpressadmin",
+    "administratorLoginPassword": "YourSecurePassword123",
+    "version": "9.3.0",
+    "storage": {
+      "storageSizeGB": 32
+    },
+    "backup": {
+      "retentionDays": 7
+    },
+    "sku": {
+      "name": "Standard_B1ms",
+      "tier": "Burstable"
+    }
+  },
+  "dependsOn": []
+}
+
+
+  ],
+  "outputs": {
+    // Hier können wir später Ausgaben definieren
+  }
+}
